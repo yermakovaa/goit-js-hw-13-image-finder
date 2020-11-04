@@ -24,7 +24,6 @@ refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', fetchCards);
 refs.cardsContainer.addEventListener('click', onOpenModal);
 
-
 function onSearch(e) {
   e.preventDefault();
 
@@ -46,18 +45,21 @@ function onSearch(e) {
 
 function fetchCards() {
   loadMoreBtn.disable();
-  newsApiService.fetchCards().then(images => {
-    appendCardsMarkup(images);
-    loadMoreBtn.enable();
-    if (images.length === 0) {
-      loadMoreBtn.hide();
-      error({
-        text: 'No matches found!',
-        delay: 1500,
-        closerHover: true,
-      });
-    }
-  });
+  newsApiService
+    .fetchCards()
+    .then(images => {
+      appendCardsMarkup(images);
+      loadMoreBtn.enable();
+      if (images.length === 0) {
+        loadMoreBtn.hide();
+        error({
+          text: 'No matches found!',
+          delay: 1500,
+          closerHover: true,
+        });
+      }
+    })
+    .catch(err => console.log(err));
 }
 
 function appendCardsMarkup(images) {
