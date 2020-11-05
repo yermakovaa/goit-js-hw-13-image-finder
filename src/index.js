@@ -21,7 +21,7 @@ const loadMoreBtn = new LoadMoreBtn({
 const newsApiService = new NewsApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
-loadMoreBtn.refs.button.addEventListener('click', fetchCards);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 refs.cardsContainer.addEventListener('click', onOpenModal);
 
 function onSearch(e) {
@@ -45,21 +45,18 @@ function onSearch(e) {
 
 function fetchCards() {
   loadMoreBtn.disable();
-  newsApiService
-    .fetchCards()
-    .then(images => {
-      appendCardsMarkup(images);
-      loadMoreBtn.enable();
-      if (images.length === 0) {
-        loadMoreBtn.hide();
-        error({
-          text: 'No matches found!',
-          delay: 1500,
-          closerHover: true,
-        });
-      }
-    })
-    .catch(err => console.log(err));
+  return newsApiService.fetchCards().then(images => {
+    appendCardsMarkup(images);
+    loadMoreBtn.enable();
+    if (images.length === 0) {
+      loadMoreBtn.hide();
+      error({
+        text: 'No matches found!',
+        delay: 1500,
+        closerHover: true,
+      });
+    }
+  });
 }
 
 function appendCardsMarkup(images) {
@@ -77,4 +74,17 @@ function onOpenModal(e) {
 
   const largeImageURL = `<img src= ${e.target.dataset.source}>`;
   basicLightbox.create(largeImageURL).show();
+}
+
+function onLoadMore() {
+  fetchCards()
+    .then(
+      setTimeout(() => {
+        window.scrollBy({
+          top: document.documentElement.clientHeight - 100,
+          behavior: 'smooth',
+        });
+      }, 1000),
+    )
+    .catch(err => console.log(err));
 }
